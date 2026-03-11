@@ -4,8 +4,9 @@
 
 ---
 
-## 📊 Difficulty Tracker
+## 📊 Progress
 
+![Problems Solved](https://img.shields.io/badge/Problems_Solved-1-blue?style=for-the-badge)
 ![Easy](https://img.shields.io/badge/Easy-0-green?style=for-the-badge)
 ![Medium](https://img.shields.io/badge/Medium-0-orange?style=for-the-badge)
 ![Hard](https://img.shields.io/badge/Hard-1-red?style=for-the-badge)
@@ -20,6 +21,7 @@
 ![Dynamic Programming](https://img.shields.io/badge/Dynamic_Programming-purple?style=flat-square)
 ![Graphs](https://img.shields.io/badge/Graphs-blue?style=flat-square)
 ![Trees](https://img.shields.io/badge/Trees-blue?style=flat-square)
+![Bit Manipulation](https://img.shields.io/badge/Bit_Manipulation-blue?style=flat-square)
 
 ---
 
@@ -33,18 +35,69 @@ leetcode-solutions
 ├── sliding-window
 ├── dynamic-programming
 ├── graphs
-└── trees
+├── trees
+└── bit-manipulation
 
 
 ---
 
-## 🧩 Solved Problems
+# 🧩 Solved Problems
 
-### Dynamic Programming
+---
 
-| Problem | Difficulty | Solution |
-|-------|-------|-------|
-| 3130. Find All Possible Stable Binary Arrays II | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](dynamic-programming/LC_3130_Find_All_Possible_Stable_Binary_Arrays_II.java) |
+## Dynamic Programming
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| 3130 | Find All Possible Stable Binary Arrays II | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](dynamic-programming/LC_3130_Find_All_Possible_Stable_Binary_Arrays_II.java) |
+
+---
+
+## Bit Manipulation
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| 1009 | Complement of Base 10 Integer | ![Easy](https://img.shields.io/badge/Easy-green) | [Java](bit-manipulation/LC_1009_Complement_of_Base_10_Integer.java) |
+
+---
+
+## Arrays
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| - | - | - | - |
+
+---
+
+## Strings
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| - | - | - | - |
+
+---
+
+## Sliding Window
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| - | - | - | - |
+
+---
+
+## Graphs
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| - | - | - | - |
+
+---
+
+## Trees
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| - | - | - | - |
 
 ---
 
@@ -56,10 +109,10 @@ leetcode-solutions
 
 ## 🎯 Goals
 
-- Solve problems consistently
-- Improve problem-solving skills
-- Master data structures & algorithms
-- Prepare for software engineering interviews
+- Solve problems consistently  
+- Improve **problem-solving skills**
+- Master **data structures & algorithms**
+- Prepare for **software engineering interviews**
 
 ---
 
