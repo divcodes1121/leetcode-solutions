@@ -7,7 +7,7 @@
 ## 📊 Progress
 
 ![Problems Solved](https://img.shields.io/badge/Problems_Solved-1-blue?style=for-the-badge)
-![Easy](https://img.shields.io/badge/Easy-0-green?style=for-the-badge)
+![Easy](https://img.shields.io/badge/Easy-1-green?style=for-the-badge)
 ![Medium](https://img.shields.io/badge/Medium-0-orange?style=for-the-badge)
 ![Hard](https://img.shields.io/badge/Hard-1-red?style=for-the-badge)
 
