@@ -6,10 +6,10 @@
 
 ## 📊 Progress
 
-![Problems Solved](https://img.shields.io/badge/Problems_Solved-1-blue?style=for-the-badge)
+![Problems Solved](https://img.shields.io/badge/Problems_Solved-3-blue?style=for-the-badge)
 ![Easy](https://img.shields.io/badge/Easy-1-green?style=for-the-badge)
 ![Medium](https://img.shields.io/badge/Medium-0-orange?style=for-the-badge)
-![Hard](https://img.shields.io/badge/Hard-1-red?style=for-the-badge)
+![Hard](https://img.shields.io/badge/Hard-2-red?style=for-the-badge)
 
 ---
 
@@ -53,6 +53,14 @@ leetcode-solutions
 
 ---
 
+## Graphs
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| 3600 | Maximize Spanning Tree Stability with Upgrades | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](graphs/3600.%20Maximize%20Spanning%20Tree%20Stability%20with%20Upgrades.java) |
+
+---
+
 ## Bit Manipulation
 
 | # | Problem | Difficulty | Solution |
@@ -78,14 +86,6 @@ leetcode-solutions
 ---
 
 ## Sliding Window
-
-| # | Problem | Difficulty | Solution |
-|---|--------|-----------|----------|
-| - | - | - | - |
-
----
-
-## Graphs
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
