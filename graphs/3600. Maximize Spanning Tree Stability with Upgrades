@@ -1,0 +1,228 @@
+================================================================
+LeetCode 3600. Maximize Spanning Tree Stability with Upgrades
+Difficulty: Hard
+Topics: Graph · Union Find · Binary Search on Answer · Greedy · MST
+================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROBLEM SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You have n nodes and a list of edges. Each edge has:
+  - two endpoints (u, v)
+  - a strength s
+  - a flag must (0 or 1)
+
+Rules:
+  - must=1 edges MUST be in the spanning tree (cannot upgrade them)
+  - must=0 edges are optional, and can be upgraded (strength x2), at most once each
+  - You have k total upgrades to spend
+  - Stability = minimum strength among all edges in the spanning tree
+  - Goal: maximize stability. Return -1 if spanning tree is impossible.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Example 1: n=3, edges=[[0,1,2,1],[1,2,3,0]], k=1
+  → Must include edge (0-1, s=2). Optional edge (1-2, s=3) upgraded to 6.
+  → Tree strengths: {2, 6} → min = 2 ✓
+
+Example 2: n=3, edges=[[0,1,4,0],[1,2,3,0],[0,2,1,0]], k=2
+  → Upgrade (0-1): 4→8, upgrade (1-2): 3→6. Tree = {8, 6} → min = 6 ✓
+
+Example 3: n=3, all edges must=1, form a triangle
+  → Must-edges create a cycle → impossible → -1 ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTUITION — HOW TO THINK ABOUT IT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Instead of trying to directly build the "best" spanning tree,
+flip the question:
+
+  "Can I build a spanning tree where every edge has strength ≥ T?"
+
+If you can answer that YES/NO question efficiently, you just
+binary search over T to find the highest T that works.
+
+For a given target T, an edge qualifies if:
+  - It's a must-edge with s ≥ T  (no choice, must use it)
+  - It's optional with s ≥ T     (free, no upgrade needed)
+  - It's optional with 2s ≥ T    (needs 1 upgrade from your budget k)
+
+This is just a modified Kruskal: greedily add edges using Union-Find,
+being careful to spend upgrade budget only when necessary.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPROACH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1 — Collect candidates for binary search
+  The answer must equal some edge's raw strength or doubled strength.
+  So collect all values of s and 2s → sort → binary search over them.
+
+Step 2 — Pre-sort optional edges DESC by strength (done once)
+  Reused across every binary search iteration. Stronger edges first
+  means we naturally prefer free edges before upgradable ones,
+  and we can break early once s < ⌈T/2⌉.
+
+Step 3 — Feasibility check canAchieve(T):
+  a) Add all must-edges
+       → if any must-edge s < T: return false (too weak, can't fix it)
+       → if must-edges form a cycle: return false
+  b) Add free optional edges (s ≥ T), no upgrade cost
+  c) Add upgradable optional edges (s ≥ ⌈T/2⌉), each costs 1 upgrade
+       → break early once edges drop below ⌈T/2⌉ (sorted, so safe)
+  d) Return true if upgrades spent ≤ k AND we have exactly n-1 edges
+
+Step 4 — Binary search
+  Find the maximum T where canAchieve(T) = true.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLEXITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Time  : O(E · α(N) · log E)   ← optimal for this problem
+  Space : O(E + N)
+
+  Key constant-factor optimizations over naive:
+  - UF arrays allocated once, reset in-place (no GC pressure)
+  - Optional edges sorted once, not inside each canAchieve call
+  - Candidates stored as plain int[] not TreeSet (no boxing)
+  - Single pass through opt edges with early break
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+JAVA SOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```java
+import java.util.*;
+
+class Solution {
+
+    private int[] parent, ufRank;
+    private int[][] optSorted, mustArr;
+
+    private int find(int x) {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]]; // path halving
+            x = parent[x];
+        }
+        return x;
+    }
+
+    private boolean union(int x, int y) {
+        int px = find(x), py = find(y);
+        if (px == py) return false;
+        if (ufRank[px] < ufRank[py]) { int t = px; px = py; py = t; }
+        parent[py] = px;
+        if (ufRank[px] == ufRank[py]) ufRank[px]++;
+        return true;
+    }
+
+    public int maxStability(int n, int[][] edges, int k) {
+        // Separate must vs optional edges
+        int mc = 0, oc = 0;
+        for (int[] e : edges) { if (e[3] == 1) mc++; else oc++; }
+        mustArr   = new int[mc][];
+        optSorted = new int[oc][];
+        int mi = 0, oi = 0;
+        for (int[] e : edges) {
+            if (e[3] == 1) mustArr[mi++] = e;
+            else           optSorted[oi++] = e;
+        }
+
+        // Sort optional edges DESC by strength — done ONCE, reused every BS call
+        Arrays.sort(optSorted, (a, b) -> b[2] - a[2]);
+
+        // Candidate answer values: every s and 2s, deduplicated
+        int[] cands = new int[edges.length * 2];
+        int ci = 0;
+        for (int[] e : edges) { cands[ci++] = e[2]; cands[ci++] = e[2] * 2; }
+        Arrays.sort(cands);
+        int uci = 0;
+        for (int i = 0; i < cands.length; i++) {
+            if (i == 0 || cands[i] != cands[i - 1]) cands[uci++] = cands[i];
+        }
+
+        // Allocate UF arrays once — reset in-place each call, no GC
+        parent = new int[n];
+        ufRank = new int[n];
+
+        if (!canAchieve(n, k, 1)) return -1;
+
+        int lo = 0, hi = uci - 1, ans = 1;
+        while (lo <= hi) {
+            int mid = (lo + hi) >>> 1;
+            if (canAchieve(n, k, cands[mid])) { ans = cands[mid]; lo = mid + 1; }
+            else                               { hi = mid - 1; }
+        }
+        return ans;
+    }
+
+    private boolean canAchieve(int n, int k, int T) {
+        // Reset UF in-place
+        for (int i = 0; i < n; i++) { parent[i] = i; ufRank[i] = 0; }
+        int used = 0;
+
+        // 1. Must-edges: can't skip, can't upgrade
+        for (int[] e : mustArr) {
+            if (e[2] < T) return false;           // too weak, no fix possible
+            if (!union(e[0], e[1])) return false; // forms a cycle
+            used++;
+        }
+
+        // 2. Optional edges — single pass, pre-sorted DESC
+        //    s >= T        → free (no upgrade)
+        //    s >= ceil(T/2) → needs 1 upgrade
+        //    s < ceil(T/2)  → useless even doubled → break early
+        int halfT = (T + 1) >> 1;
+        int spent = 0;
+
+        for (int[] e : optSorted) {
+            if (used == n - 1) break;
+            int s = e[2];
+            if (s >= T) {
+                if (union(e[0], e[1])) used++;
+            } else if (s >= halfT) {
+                if (union(e[0], e[1])) { used++; spent++; }
+            } else {
+                break; // sorted DESC: nothing below qualifies
+            }
+        }
+
+        return spent <= k && used == n - 1;
+    }
+}
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WALKTHROUGH — Example 2
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+edges = [[0,1,4,0],[1,2,3,0],[0,2,1,0]], k=2
+Candidates = {1, 2, 3, 4, 6, 8}
+
+Binary search tries T=4:
+  No must-edges.
+  Free (s≥4): edge(0-1, s=4) → union(0,1) ✓
+  Upgradable (s≥2): edge(1-2, s=3) → union(1,2), spent=1 ✓
+  s=1 < ceil(4/2)=2 → break
+  spent=1 ≤ k=2, used=2=n-1 → TRUE → try higher
+
+Binary search tries T=6:
+  Free (s≥6): none
+  Upgradable (s≥3): edge(0-1,s=4)→union(0,1),spent=1
+                    edge(1-2,s=3)→union(1,2),spent=2
+  spent=2 ≤ k=2, used=2=n-1 → TRUE → try higher
+
+Binary search tries T=8:
+  Upgradable (s≥4): edge(0-1,s=4)→union(0,1),spent=1
+  s=3 < ceil(8/2)=4 → break
+  used=1 ≠ n-1=2 → FALSE
+
+Answer = 6 ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EDGE CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Must-edges form a cycle             → -1
+  • Graph is disconnected               → -1
+  • All must-edges, no optionals        → check cycle, return min(must strengths)
+  • k=0, no upgrades                    → standard max-min spanning tree
+  • k ≥ E, unlimited upgrades           → upgrade every optional edge you pick
+================================================================
