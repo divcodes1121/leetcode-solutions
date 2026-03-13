@@ -1,0 +1,125 @@
+================================================================
+LeetCode 3296. Minimum Number of Seconds to Make Mountain Height Zero
+Difficulty: Medium
+Topics: Binary Search on Answer · Math · Greedy
+================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROBLEM SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You have a mountain of height H and n workers working simultaneously.
+
+Worker i reducing height by x takes:
+  w[i]*1 + w[i]*2 + ... + w[i]*x  =  w[i] * x*(x+1)/2  seconds
+
+Since workers work in parallel, total time = max(each worker's time).
+Goal: assign height reductions to workers to minimize that maximum.
+Return the minimum possible seconds to reach height 0.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Example 1: mountainHeight=4, workerTimes=[2,1,1], k=1
+  Worker 0 (w=2): reduces by 1 → 2s
+  Worker 1 (w=1): reduces by 2 → 1+2 = 3s
+  Worker 2 (w=1): reduces by 1 → 1s
+  Answer = max(2,3,1) = 3 ✓
+
+Example 2: mountainHeight=10, workerTimes=[3,2,2,4]
+  Workers reduce by 2,3,3,2 → times 9,12,12,12
+  Answer = max(9,12,12,12) = 12 ✓
+
+Example 3: mountainHeight=5, workerTimes=[1]
+  One worker does all 5 → 1+2+3+4+5 = 15 ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTUITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Workers work simultaneously so total time = max of all worker times.
+Instead of figuring out the perfect assignment directly, flip the question:
+
+  "Can all workers together reduce height H within time T?"
+
+If YES/NO can be checked efficiently → binary search on T.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPROACH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1 — Binary search on T
+  lo = 1
+  hi = min(w) * H*(H+1)/2   (fastest worker doing everything alone)
+
+Step 2 — Feasibility check canFinish(T)
+  For each worker w, find max height x they can reduce in time T:
+    w * x*(x+1)/2 ≤ T
+    x*(x+1) ≤ 2T/w
+    x = floor( (-1 + √(1 + 8T/w)) / 2 )   ← quadratic formula
+
+  Sum all x values. If sum ≥ mountainHeight → feasible.
+  Early exit: stop as soon as total >= mountainHeight.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLEXITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Time  : O(n · log(w_min · H²))
+  Space : O(1)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```java
+class Solution {
+    public long minNumberOfSeconds(int mountainHeight, int[] workerTimes) {
+        long lo = 1;
+        long hi = (long) workerTimes[0] * mountainHeight * (mountainHeight + 1) / 2;
+        for (int w : workerTimes) {
+            hi = Math.min(hi, (long) w * mountainHeight * (mountainHeight + 1) / 2);
+        }
+        // hi = fastest single worker doing everything alone
+
+        while (lo < hi) {
+            long mid = (lo + hi) / 2;
+            if (canFinish(mid, mountainHeight, workerTimes)) hi = mid;
+            else lo = mid + 1;
+        }
+        return lo;
+    }
+
+    // For time T, check if workers can collectively reduce height by mountainHeight
+    private boolean canFinish(long T, int mountainHeight, int[] workerTimes) {
+        long total = 0;
+        for (int w : workerTimes) {
+            // max x where w * x*(x+1)/2 <= T
+            // x*(x+1) <= 2T/w  =>  x = floor((-1 + sqrt(1 + 8T/w)) / 2)
+            long val = 2 * T / w;
+            long x = (long)((-1 + Math.sqrt(1 + 4.0 * val)) / 2);
+            // Adjust for floating point errors
+            while ((x + 1) * (x + 2) / 2 * w <= T) x++;
+            total += x;
+            if (total >= mountainHeight) return true;
+        }
+        return false;
+    }
+}
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WALKTHROUGH — Example 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+mountainHeight=4, workerTimes=[2,1,1]
+
+hi = min(2,1,1) * 4*5/2 = 1 * 10 = 10
+Binary search lo=1, hi=10
+
+T=5: w=2 → x=1(2s), w=1 → x=2(3s), w=1 → x=2 → total=5≥4 ✓ → hi=5
+T=3: w=2 → x=1(2s), w=1 → x=2(3s), w=1 → x=2 → total=5≥4 ✓ → hi=3
+T=2: w=2 → x=1, w=1 → x=1, w=1 → x=1 → total=3 < 4 ✗ → lo=3
+lo==hi==3 → return 3 ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EDGE CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Single worker       → does all H units alone
+  • All workers same    → divide H evenly
+  • mountainHeight = 1  → fastest worker takes min(workerTimes) seconds
+================================================================
