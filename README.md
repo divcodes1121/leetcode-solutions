@@ -6,7 +6,7 @@
 
 ## 📊 Progress
 
-![Problems Solved](https://img.shields.io/badge/Problems_Solved-3-blue?style=for-the-badge)
+![Problems Solved](https://img.shields.io/badge/Problems_Solved-4-blue?style=for-the-badge)
 ![Easy](https://img.shields.io/badge/Easy-1-green?style=for-the-badge)
 ![Medium](https://img.shields.io/badge/Medium-1-orange?style=for-the-badge)
 ![Hard](https://img.shields.io/badge/Hard-2-red?style=for-the-badge)
@@ -49,7 +49,7 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 3130 | Find All Possible Stable Binary Arrays II | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](dynamic-programming/LC_3130_Find_All_Possible_Stable_Binary_Arrays_II.java) |
+| 3130 | Find All Possible Stable Binary Arrays II | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/dynamic-programming/LC_3130_Find_All_Possible_Stable_Binary_Arrays_II.java) |
 
 ---
 
@@ -57,7 +57,7 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 3600 | Maximize Spanning Tree Stability with Upgrades | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](graphs/3600.%20Maximize%20Spanning%20Tree%20Stability%20with%20Upgrades.java) |
+| 3600 | Maximize Spanning Tree Stability with Upgrades | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/graphs/3600.%20Maximize%20Spanning%20Tree%20Stability%20with%20Upgrades.java) |
 
 ---
 
@@ -65,7 +65,7 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 1009 | Complement of Base 10 Integer | ![Easy](https://img.shields.io/badge/Easy-green) | [Java](bit-manipulation/LC_1009_Complement_of_Base_10_Integer.java) |
+| 1009 | Complement of Base 10 Integer | ![Easy](https://img.shields.io/badge/Easy-green) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/bit-manipulation/LC_1009_Complement_of_Base_10_Integer.java) |
 
 ---
 
@@ -73,7 +73,8 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 3296 | Minimum Number of Seconds to Make Mountain Height Zero | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](arrays/3296.%20Minimum%20Number%20of%20Seconds%20to%20Make%20Mountain%20Height%20Zero.java) |
+| 3296 | Minimum Number of Seconds to Make Mountain Height Zero | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/arrays/3296.%20Minimum%20Number%20of%20Seconds%20to%20Make%20Mountain%20Height%20Zero.java) |
+
 ---
 
 ## Strings
