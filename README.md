@@ -8,7 +8,7 @@
 
 ![Problems Solved](https://img.shields.io/badge/Problems_Solved-3-blue?style=for-the-badge)
 ![Easy](https://img.shields.io/badge/Easy-1-green?style=for-the-badge)
-![Medium](https://img.shields.io/badge/Medium-0-orange?style=for-the-badge)
+![Medium](https://img.shields.io/badge/Medium-1-orange?style=for-the-badge)
 ![Hard](https://img.shields.io/badge/Hard-2-red?style=for-the-badge)
 
 ---
@@ -73,8 +73,7 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| - | - | - | - |
-
+| 3296 | Minimum Number of Seconds to Make Mountain Height Zero | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](arrays/3296.%20Minimum%20Number%20of%20Seconds%20to%20Make%20Mountain%20Height%20Zero.java) |
 ---
 
 ## Strings
