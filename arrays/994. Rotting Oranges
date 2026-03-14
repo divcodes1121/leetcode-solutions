@@ -1,0 +1,155 @@
+================================================================
+LeetCode 994. Rotting Oranges
+Difficulty: Medium
+Topics: BFS · Matrix · Graph
+================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROBLEM SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Given an m x n grid where:
+  0 = empty cell
+  1 = fresh orange
+  2 = rotten orange
+
+Every minute, any fresh orange 4-directionally adjacent to a rotten
+orange becomes rotten. Return the minimum minutes until no fresh
+oranges remain. If impossible, return -1.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Example 1: grid = [[2,1,1],[1,1,0],[0,1,1]]
+  Output: 4
+  Rotten orange spreads to all fresh ones in 4 minutes ✓
+
+Example 2: grid = [[2,1,1],[0,1,1],[1,0,1]]
+  Output: -1
+  Bottom-left orange is isolated, can never be reached ✓
+
+Example 3: grid = [[0,2]]
+  Output: 0
+  No fresh oranges to begin with ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTUITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Multiple rotten oranges all spread simultaneously — not one after
+another. The moment you realize that, it screams multi-source BFS.
+Start from ALL rotten oranges at once and spread level by level,
+where each level = 1 minute passing.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+APPROACH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1 — Scan the grid
+  Add all rotten oranges (2) to queue as starting points.
+  Count all fresh oranges (1) — target is to reach 0.
+
+Step 2 — BFS level by level
+  Each level = 1 minute. For every rotten orange in the current
+  level, check all 4 neighbors:
+    → If neighbor is fresh: mark rotten, add to queue, fresh--
+
+Step 3 — Return answer
+  fresh == 0 → return minutes
+  fresh  > 0 → isolated oranges exist, return -1
+
+Why BFS not DFS?
+  BFS processes layer by layer = minutes passing naturally.
+  DFS would give wrong time counts.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLEXITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Time  : O(m × n) — every cell visited at most once
+  Space : O(m × n) — queue holds at most all cells
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```java
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        // 0 represents empty cell or no orange
+        // 1 represents fresh oranges that needs to be infected
+        // 2 represents the rotten oranges that will start infecting its neighbours
+
+        // Key point :  There might be multpile roptten oranges and we neec to start spreading simultaneously 
+        // we can use BFS which will be a multi source BFS having taking care of all initial rotten oranges at the same time 
+
+        // First step is to find the rotten and fresh oranges from the grid
+
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        int fresh = 0;
+
+        // need to create a queue so that it will store the key location(the index (i,j)) in it
+
+        Queue<int[]> queue = new LinkedList<>();
+
+        // now to find the number of rotten oranges and the fresh oranges
+        for(int i=0;i<rows;i++){
+            for(int j = 0;j<cols;j++){
+                if(grid[i][j] == 2){
+                    queue.add(new int[]{i,j});
+                }
+                if(grid[i][j] == 1){
+                    fresh++;
+                }
+            }
+        }
+    // we need to inititialise the directiosn so that whe we are in the queue size it will check all the directions one by one and update the rotten oranges
+        int[][] directions = {{1,0},{-1,0},{0,1},{0,-1}};
+        int minutes = 0;
+
+        // actual BFS logic which will spread for the rotten oranges and find the minimum minutes
+        while(!queue.isEmpty() && fresh > 0){
+            int size = queue.size();
+            minutes++;
+            
+            for(int i=0;i<size;i++){
+                int[] cell = queue.poll();
+                int r = cell[0];
+                int c = cell[1];
+
+                for(int[] d : directions){
+                    int nr = r + d[0];
+                    int nc = c + d[1];
+
+                    if(nr >=0 && nc >= 0 && nr < rows && nc < cols && grid[nr][nc] == 1){
+                        grid[nr][nc] = 2;
+
+                        queue.add(new int[]{nr,nc});
+                        fresh--;
+                    }
+                }
+            }
+        }
+
+        return fresh == 0 ? minutes : -1;
+
+    }
+}
+```
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WALKTHROUGH — Example 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+grid = [[2,1,1],[1,1,0],[0,1,1]]   fresh=6
+
+Minute 1: (0,0) spreads → (0,1),(1,0) rot   fresh=4
+Minute 2: (0,1),(1,0) spread → (0,2),(1,1)  fresh=2
+Minute 3: (0,2),(1,1) spread → (2,1)        fresh=1
+Minute 4: (2,1) spreads → (2,2)             fresh=0
+
+Return 4 ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EDGE CASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • No fresh oranges at start → return 0 immediately
+  • No rotten oranges but fresh exist → return -1
+  • Fresh orange blocked by empty cells → return -1
+================================================================
