@@ -121,6 +121,22 @@
  *           → loop k = 0 to k < s   (not k <= s!)
  *           → this prevents counting corners twice
  *
+ * maxSize formula:
+ *   → min(up, down, left, right) from center
+ *   → stops the rhombus falling off the grid
+ *   → up=i, down=rows-1-i, left=j, right=cols-1-j
+ *
+ * TreeSet of size 3:
+ *   → add() sorts automatically + deduplicates
+ *   → pollFirst() evicts smallest when size > 3
+ *   → descendingSet() gives final answer in right order
+ *
+ * getRhombusSum 4 legs:
+ *   Leg1: grid[i - s + k][j + k]      k=0 is TOP    corner
+ *   Leg2: grid[i + k][j + s - k]      k=0 is RIGHT  corner
+ *   Leg3: grid[i + s - k][j - k]      k=0 is BOTTOM corner
+ *   Leg4: grid[i - k][j - s + k]      k=0 is LEFT   corner
+ *
  * TIME COMPLEXITY:  O(m * n * min(m,n)^2)  → fine for 50x50 grid
  * SPACE COMPLEXITY: O(1) extra (TreeSet holds at most 4 elements)
  *
@@ -133,63 +149,24 @@ class Solution {
 
     public int[] getBiggestThree(int[][] grid) {
 
-        int rows = grid.length;       // total number of rows
-        int cols = grid[0].length;    // total number of columns
+        int rows = grid.length;
+        int cols = grid[0].length;
 
-        // TreeSet = smart scoreboard that:
-        //   ✅ auto-sorts values (smallest → largest internally)
-        //   ✅ ignores duplicates automatically
-        //   ✅ lets us remove the smallest easily (pollFirst)
-        // We keep at most 3 values here at any time
         TreeSet<Integer> top3 = new TreeSet<>();
 
-        // -------------------------------------------------------
-        // STEP 1: Try every cell as the center of a rhombus
-        // -------------------------------------------------------
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
 
-                // -----------------------------------------------
-                // STEP 2: Find maxSize — biggest rhombus that fits
-                //
-                // Rhombus of size s needs:
-                //   s steps UP    → need i >= s         → can go up    (i)     steps
-                //   s steps DOWN  → need i+s <= rows-1  → can go down  (rows-1-i) steps
-                //   s steps LEFT  → need j >= s         → can go left  (j)     steps
-                //   s steps RIGHT → need j+s <= cols-1  → can go right (cols-1-j) steps
-                //
-                // All 4 must be satisfied → take the MINIMUM
-                //
-                // Example: center=(2,1), rows=5, cols=5
-                //   up    = 2  (i = 2)
-                //   down  = 2  (rows-1-i = 4-2 = 2)
-                //   left  = 1  (j = 1)
-                //   right = 3  (cols-1-j = 4-1 = 3)
-                //   maxSize = min(2, 2, 1, 3) = 1 ← left side limits us!
-                // -----------------------------------------------
                 int maxSize = Math.min(
-                                Math.min(i, rows - 1 - i),    // up vs down
-                                Math.min(j, cols - 1 - j)     // left vs right
+                                Math.min(i, rows - 1 - i),
+                                Math.min(j, cols - 1 - j)
                               );
 
-                // -----------------------------------------------
-                // STEP 3: Try every size from 0 up to maxSize
-                //
-                // s=0 → single cell (always valid, even on edges)
-                // s=1 → small 4-cell diamond
-                // s=2 → bigger 8-cell diamond
-                // ...
-                // -----------------------------------------------
                 for (int s = 0; s <= maxSize; s++) {
 
                     int sum = getRhombusSum(grid, i, j, s);
-
-                    // Put this sum on the scoreboard
                     top3.add(sum);
 
-                    // Scoreboard only holds 3 spots.
-                    // If we now have 4, kick out the smallest.
-                    // pollFirst() = remove the minimum from TreeSet
                     if (top3.size() > 3) {
                         top3.pollFirst();
                     }
@@ -197,13 +174,6 @@ class Solution {
             }
         }
 
-        // -------------------------------------------------------
-        // STEP 4: Convert top3 to int array in DESCENDING order
-        //
-        // TreeSet internally stores: {211, 216, 228}  (ascending)
-        // We want output:            [228, 216, 211]  (descending)
-        // descendingSet() gives us the reverse view
-        // -------------------------------------------------------
         int[] result = new int[top3.size()];
         int idx = 0;
         for (int val : top3.descendingSet()) {
@@ -211,119 +181,19 @@ class Solution {
         }
 
         return result;
-        // Example 1 output: [228, 216, 211] ✅
-        // Example 2 output: [20, 9, 8]      ✅
-        // Example 3 output: [7]             ✅
     }
 
 
-    // ===========================================================
-    // HELPER: Calculate border sum of rhombus at center(i,j)
-    //         with given size s
-    //
-    // Visual of a size-2 rhombus at center (i,j):
-    //
-    //                  TOP
-    //                (i-s, j)
-    //               /        \
-    //         (i-1,j-1)    (i-1,j+1)
-    //            /                  \
-    //    LEFT                           RIGHT
-    //  (i, j-s)          *           (i, j+s)
-    //            \                  /
-    //         (i+1,j-1)    (i+1,j+1)
-    //               \        /
-    //                BOTTOM
-    //               (i+s, j)
-    //
-    // We walk the border like an ant going clockwise:
-    //   Leg1: TOP → RIGHT   (down-right direction)
-    //   Leg2: RIGHT → BOTTOM (down-left direction)
-    //   Leg3: BOTTOM → LEFT  (up-left direction)
-    //   Leg4: LEFT → TOP     (up-right direction)
-    //
-    // KEY RULE: each leg starts AT its own corner
-    //           but stops just BEFORE the next corner
-    //           → loop k goes from 0 to k < s (NOT k <= s)
-    //           → this way no corner is ever counted twice!
-    // ===========================================================
     private int getRhombusSum(int[][] grid, int i, int j, int s) {
 
-        // Size 0 = just the single center cell, no border to walk
         if (s == 0) return grid[i][j];
 
         int sum = 0;
 
-        // -----------------------------------------------------------
-        // LEG 1: TOP corner → towards RIGHT corner
-        //        Direction: down-right (row++, col++)
-        //
-        //        Formula: grid[i - s + k][j + k]
-        //
-        //        When k=0:   grid[i-s][j]     ← TOP corner itself
-        //        When k=1:   one step down-right
-        //        When k=s-1: one step before RIGHT corner
-        //        (RIGHT corner is picked up by Leg 2)
-        //
-        //        Trace: center=(2,1), s=1
-        //          k=0: grid[2-1+0][1+0] = grid[1][1] = 3 ✅ (TOP)
-        // -----------------------------------------------------------
-        for (int k = 0; k < s; k++) {
-            sum += grid[i - s + k][j + k];
-        }
-
-        // -----------------------------------------------------------
-        // LEG 2: RIGHT corner → towards BOTTOM corner
-        //        Direction: down-left (row++, col--)
-        //
-        //        Formula: grid[i + k][j + s - k]
-        //
-        //        When k=0:   grid[i][j+s]     ← RIGHT corner itself
-        //        When k=s-1: one step before BOTTOM corner
-        //
-        //        Trace: center=(2,1), s=1
-        //          k=0: grid[2+0][1+1-0] = grid[2][2] = 200 ✅ (RIGHT)
-        // -----------------------------------------------------------
-        for (int k = 0; k < s; k++) {
-            sum += grid[i + k][j + s - k];
-        }
-
-        // -----------------------------------------------------------
-        // LEG 3: BOTTOM corner → towards LEFT corner
-        //        Direction: up-left (row--, col--)
-        //
-        //        Formula: grid[i + s - k][j - k]
-        //
-        //        When k=0:   grid[i+s][j]     ← BOTTOM corner itself
-        //        When k=s-1: one step before LEFT corner
-        //
-        //        Trace: center=(2,1), s=1
-        //          k=0: grid[2+1-0][1-0] = grid[3][1] = 5 ✅ (BOTTOM)
-        // -----------------------------------------------------------
-        for (int k = 0; k < s; k++) {
-            sum += grid[i + s - k][j - k];
-        }
-
-        // -----------------------------------------------------------
-        // LEG 4: LEFT corner → towards TOP corner
-        //        Direction: up-right (row--, col++)
-        //
-        //        Formula: grid[i - k][j - s + k]
-        //
-        //        When k=0:   grid[i][j-s]     ← LEFT corner itself
-        //        When k=s-1: one step before TOP corner
-        //                    (TOP corner already counted in Leg 1!)
-        //
-        //        Trace: center=(2,1), s=1
-        //          k=0: grid[2-0][1-1+0] = grid[2][0] = 20 ✅ (LEFT)
-        // -----------------------------------------------------------
-        for (int k = 0; k < s; k++) {
-            sum += grid[i - k][j - s + k];
-        }
-
-        // Final proof for center=(2,1), s=1:
-        // Leg1 + Leg2 + Leg3 + Leg4
-        //  = 3  + 200  +  5  +  20  = 228 🎉 (Blue rhombus!)
+        for (int k = 0; k < s; k++) sum += grid[i - s + k][j + k];
+        for (int k = 0; k < s; k++) sum += grid[i + k][j + s - k];
+        for (int k = 0; k < s; k++) sum += grid[i + s - k][j - k];
+        for (int k = 0; k < s; k++) sum += grid[i - k][j - s + k];
 
         return sum;
     }
@@ -331,16 +201,3 @@ class Solution {
 ```
 
 ---
-
-## The 3 Things To Never Forget
-```
-1. maxSize  →  min(up, down, left, right) from center
-              stops the rhombus falling off the grid
-
-2. k < s    →  each leg starts AT its corner
-              stops BEFORE next corner
-              → no double counting ever happens
-
-3. TreeSet  →  add() sorts automatically + deduplicates
-              pollFirst() evicts smallest when size > 3
-              descendingSet() gives final answer order
