@@ -1,0 +1,130 @@
+================================================================
+LEETCODE 3070 - Count Submatrices with Top-Left Element and Sum ≤ k
+Difficulty: Medium
+================================================================
+
+QUESTION
+--------
+Given a 0-indexed integer matrix `grid` and an integer `k`,
+return the number of submatrices that contain the top-left
+element of the grid, and have a sum less than or equal to k.
+
+Example 1:
+  Input:  grid = [[7,6,3],[6,6,1]], k = 18
+  Output: 4
+
+Example 2:
+  Input:  grid = [[7,2,9],[1,5,0],[2,6,6]], k = 20
+  Output: 6
+
+Constraints:
+  - m == grid.length
+  - n == grid[i].length
+  - 1 <= n, m <= 1000
+  - 0 <= grid[i][j] <= 1000
+  - 1 <= k <= 10^9
+
+
+APPROACH
+--------
+Key Insight:
+  Every submatrix containing (0,0) is fully described by its
+  bottom-right corner (i,j). So we just need to check whether
+  the rectangle sum from (0,0) to (i,j) is <= k, for every cell.
+
+Strategy: 2D Prefix Sum (built on the fly)
+  - Scan the grid left-to-right, top-to-bottom
+  - At each cell (i,j), compute prefix[i][j] using inclusion-exclusion:
+
+      prefix[i][j] = grid[i][j]
+                   + prefix[i-1][j]   (row above, same col)
+                   + prefix[i][j-1]   (col left, same row)
+                   - prefix[i-1][j-1] (top-left diagonal — subtracted
+                                       because it was added twice above)
+
+  - If prefix[i][j] <= k, increment count
+
+Complexity:
+  Time  -> O(m x n)  single pass over all cells
+  Space -> O(m x n)  prefix sum table
+
+
+DRY RUN
+-------
+Grid = [[7, 6, 3],    k = 18
+        [6, 6, 1]]
+
+Step-by-step prefix table build:
+
+(i=0, j=0):
+  prefix[0][0] = 7
+  No row above, no col left.
+  7 <= 18? YES  ->  count = 1
+
+(i=0, j=1):
+  prefix[0][1] = 6 + prefix[0][0](7) = 13
+  No row above, so no diagonal subtraction.
+  13 <= 18? YES  ->  count = 2
+
+(i=0, j=2):
+  prefix[0][2] = 3 + prefix[0][1](13) = 16
+  16 <= 18? YES  ->  count = 3
+
+(i=1, j=0):
+  prefix[1][0] = 6 + prefix[0][0](7) = 13
+  No col left, so no diagonal subtraction.
+  13 <= 18? YES  ->  count = 4
+
+(i=1, j=1):
+  prefix[1][1] = 6 + prefix[0][1](13) + prefix[1][0](13) - prefix[0][0](7)
+               = 6 + 13 + 13 - 7 = 25
+  25 <= 18? NO   ->  count stays 4
+
+(i=1, j=2):
+  prefix[1][2] = 1 + prefix[0][2](16) + prefix[1][1](25) - prefix[0][1](13)
+               = 1 + 16 + 25 - 13 = 29
+  29 <= 18? NO   ->  count stays 4
+
+Final prefix table:
+  [  7, 13, 16 ]
+  [ 13, 25, 29 ]
+
+Answer: 4
+
+
+SOLUTION (Java)
+---------------
+class Solution {
+    public int countSubmatrices(int[][] grid, int k) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        // prefix[i][j] = sum of rectangle from (0,0) to (i,j)
+        int[][] prefix = new int[rows][cols];
+        int count = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+
+                // Start with the cell's own value
+                prefix[i][j] = grid[i][j];
+
+                // Pull in the entire column above
+                if (i > 0) prefix[i][j] += prefix[i-1][j];
+
+                // Pull in the entire row to the left
+                if (j > 0) prefix[i][j] += prefix[i][j-1];
+
+                // Top-left rectangle was added twice above — subtract it once
+                if (i > 0 && j > 0) prefix[i][j] -= prefix[i-1][j-1];
+
+                // This cell is the bottom-right corner of one valid submatrix
+                if (prefix[i][j] <= k) count++;
+            }
+        }
+
+        return count;
+    }
+}
+
+================================================================
