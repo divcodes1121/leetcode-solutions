@@ -1,0 +1,182 @@
+// 3567. Minimum Absolute Difference in Sliding Submatrix
+// Medium
+//
+// ============================================================
+// PROBLEM SUMMARY
+// ============================================================
+// Given an m x n matrix and integer k, for every k x k submatrix
+// find the minimum absolute difference between any two distinct values.
+// Return a (m-k+1) x (n-k+1) result matrix.
+//
+// ============================================================
+// INTUITION
+// ============================================================
+// - We need to find the closest two distinct numbers in each k x k window.
+// - Brute force: compare every pair → O(k^4) per submatrix → too slow.
+// - Better: If we SORT the values, the closest two numbers will always
+//   be next to each other in the sorted order.
+//   Example: [8, 1, 3, -2] → sorted [-2, 1, 3, 8]
+//            differences:         3,  2,  5
+//            minimum = 2 (between 1 and 3)
+//   This is because for any three numbers a < b < c:
+//   |a - c| is always >= |a - b| and |b - c|
+//   So we never need to compare non-adjacent sorted elements.
+//
+// ============================================================
+// APPROACH
+// ============================================================
+// 1. Slide a k x k window across the entire grid
+// 2. For each window position (i, j):
+//    a. Collect all k*k values into a list
+//    b. Sort the list
+//    c. Check differences between adjacent elements in sorted list
+//    d. Track the minimum non-zero difference
+// 3. Store result in ans[i][j]
+// 4. If all elements are same → return 0
+//
+// ============================================================
+// DRY RUN - Example 1
+// ============================================================
+// Input: grid = [[1, 8],    k = 2
+//                [3,-2]]
+//
+// rows = 2, cols = 2
+// ans = new int[2-2+1][2-2+1] = new int[1][1]
+//
+// Outer loop: i=0 (only, since i <= rows-k = 0)
+// Inner loop: j=0 (only, since j <= cols-k = 0)
+//
+// → Call findMin(grid, i=0, j=0, k=2)
+//
+//   Collecting values:
+//   row=0, col=0 → grid[0][0] = 1  → values = [1]
+//   row=0, col=1 → grid[0][1] = 8  → values = [1, 8]
+//   row=1, col=0 → grid[1][0] = 3  → values = [1, 8, 3]
+//   row=1, col=1 → grid[1][1] = -2 → values = [1, 8, 3, -2]
+//
+//   After sorting:
+//   values = [-2, 1, 3, 8]
+//
+//   Checking adjacent differences:
+//   idx=1: 1 - (-2) = 3  → minDiff = 3
+//   idx=2: 3 - 1   = 2  → minDiff = 2
+//   idx=3: 8 - 3   = 5  → minDiff stays 2
+//
+//   return 2
+//
+// ans[0][0] = 2
+// Final Output: [[2]] ✓
+//
+// ============================================================
+// DRY RUN - Example 3
+// ============================================================
+// Input: grid = [[1,-2, 3],    k = 2
+//                [2, 3, 5]]
+//
+// rows = 2, cols = 3
+// ans = new int[2-2+1][3-2+1] = new int[1][2]
+//
+// Outer loop: i=0 (only)
+// Inner loop: j=0 and j=1
+//
+// ── Submatrix 1: findMin(grid, i=0, j=0, k=2) ──
+//
+//   Submatrix:
+//   1  -2
+//   2   3
+//
+//   Collecting values:
+//   row=0, col=0 → 1
+//   row=0, col=1 → -2
+//   row=1, col=0 → 2
+//   row=1, col=1 → 3
+//   values = [1, -2, 2, 3]
+//
+//   After sorting:
+//   values = [-2, 1, 2, 3]
+//
+//   Checking adjacent differences:
+//   idx=1: 1 - (-2) = 3  → minDiff = 3
+//   idx=2: 2 - 1   = 1  → minDiff = 1
+//   idx=3: 3 - 2   = 1  → minDiff stays 1
+//
+//   return 1
+//
+// ans[0][0] = 1
+//
+// ── Submatrix 2: findMin(grid, i=0, j=1, k=2) ──
+//
+//   Submatrix:
+//   -2  3
+//    3  5
+//
+//   Collecting values:
+//   row=0, col=1 → -2
+//   row=0, col=2 → 3
+//   row=1, col=1 → 3
+//   row=1, col=2 → 5
+//   values = [-2, 3, 3, 5]
+//
+//   After sorting:
+//   values = [-2, 3, 3, 5]
+//
+//   Checking adjacent differences:
+//   idx=1: 3 - (-2) = 5  → minDiff = 5
+//   idx=2: 3 - 3   = 0  → diff=0, skip (duplicate)
+//   idx=3: 5 - 3   = 2  → minDiff = 2
+//
+//   return 2
+//
+// ans[0][1] = 2
+// Final Output: [[1, 2]] ✓
+//
+// ============================================================
+// TIME & SPACE COMPLEXITY
+// ============================================================
+// Time:  O((m-k+1) * (n-k+1) * k^2 * log(k^2))
+//        → For each of the (m-k+1)*(n-k+1) submatrices,
+//          we collect k^2 elements and sort them in k^2*log(k^2)
+// Space: O(k^2) → for the values list per submatrix
+//
+// Given constraints (m,n <= 30, k <= 30) this is well within limits.
+
+import java.util.*;
+
+class Solution {
+    public int[][] minAbsDiff(int[][] grid, int k) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int[][] ans = new int[rows - k + 1][cols - k + 1];
+
+        for (int i = 0; i <= rows - k; i++) {
+            for (int j = 0; j <= cols - k; j++) {
+                ans[i][j] = findMin(grid, i, j, k);
+            }
+        }
+        return ans;
+    }
+
+    private int findMin(int[][] grid, int i, int j, int k) {
+        // Step 1: Collect all values in the k x k submatrix
+        List<Integer> values = new ArrayList<>();
+        for (int row = i; row < i + k; row++) {
+            for (int col = j; col < j + k; col++) {
+                values.add(grid[row][col]);
+            }
+        }
+
+        // Step 2: Sort to bring closest values adjacent to each other
+        Collections.sort(values);
+
+        // Step 3: Find minimum difference between adjacent sorted elements
+        int minDiff = Integer.MAX_VALUE;
+        for (int idx = 1; idx < values.size(); idx++) {
+            int diff = values.get(idx) - values.get(idx - 1);
+            if (diff == 0) continue; // skip duplicates
+            minDiff = Math.min(minDiff, diff);
+        }
+
+        // Step 4: If all elements were same, minDiff stays MAX, return 0
+        return minDiff == Integer.MAX_VALUE ? 0 : minDiff;
+    }
+}
