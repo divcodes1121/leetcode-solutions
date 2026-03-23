@@ -1,14 +1,13 @@
 # 🚀 LeetCode Solutions
-
 ⭐ Collection of my **LeetCode solutions** with clean implementations and explanations, covering important **Data Structures and Algorithms** used in technical interviews.
 
 ---
 
 ## 📊 Progress
 
-![Problems Solved](https://img.shields.io/badge/Problems_Solved-4-blue?style=for-the-badge)
+![Problems Solved](https://img.shields.io/badge/Problems_Solved-11-blue?style=for-the-badge)
 ![Easy](https://img.shields.io/badge/Easy-1-green?style=for-the-badge)
-![Medium](https://img.shields.io/badge/Medium-1-orange?style=for-the-badge)
+![Medium](https://img.shields.io/badge/Medium-8-orange?style=for-the-badge)
 ![Hard](https://img.shields.io/badge/Hard-2-red?style=for-the-badge)
 
 ---
@@ -16,6 +15,7 @@
 ## 🧠 Topics Covered
 
 ![Arrays](https://img.shields.io/badge/Arrays-blue?style=flat-square)
+![Matrix](https://img.shields.io/badge/Matrix-blue?style=flat-square)
 ![Strings](https://img.shields.io/badge/Strings-blue?style=flat-square)
 ![Sliding Window](https://img.shields.io/badge/Sliding_Window-blue?style=flat-square)
 ![Dynamic Programming](https://img.shields.io/badge/Dynamic_Programming-purple?style=flat-square)
@@ -26,8 +26,7 @@
 ---
 
 ## 📂 Repository Structure
-
-
+```
 leetcode-solutions
 │
 ├── arrays
@@ -36,8 +35,9 @@ leetcode-solutions
 ├── dynamic-programming
 ├── graphs
 ├── trees
-└── bit-manipulation
-
+├── BitManipulation
+└── Matrix
+```
 
 ---
 
@@ -57,7 +57,8 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 3600 | Maximize Spanning Tree Stability with Upgrades | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/graphs/3600.%20Maximize%20Spanning%20Tree%20Stability%20with%20Upgrades.java) |
+| 207 | Course Schedule | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/graphs/207.%20Course%20Schedule.java) |
+| 3600 | Maximize Spanning Tree Stability with Upgrades | ![Hard](https://img.shields.io/badge/Hard-red) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/graphs/3600.%20Maximize%20Spanning%20Tree%20Stability%20with%20Upgrades) |
 
 ---
 
@@ -65,7 +66,7 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 1009 | Complement of Base 10 Integer | ![Easy](https://img.shields.io/badge/Easy-green) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/bit-manipulation/LC_1009_Complement_of_Base_10_Integer.java) |
+| 1009 | Complement of Base 10 Integer | ![Easy](https://img.shields.io/badge/Easy-green) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/BitManipulation/1009.%20Complement%20of%20Base%2010%20Integer.java) |
 
 ---
 
@@ -73,7 +74,20 @@ leetcode-solutions
 
 | # | Problem | Difficulty | Solution |
 |---|--------|-----------|----------|
-| 3296 | Minimum Number of Seconds to Make Mountain Height Zero | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/arrays/3296.%20Minimum%20Number%20of%20Seconds%20to%20Make%20Mountain%20Height%20Zero.java) |
+| 994 | Rotting Oranges | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/arrays/994.%20Rotting%20Oranges) |
+| 1878 | Get Biggest Three Rhombus Sums in a Grid | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/arrays/1878.%20Get%20Biggest%20Three%20Rhombus%20Sums%20in%20a%20Grid) |
+| 3296 | Minimum Number of Seconds to Make Mountain Height Zero | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/arrays/3296.%20Minimum%20Number%20of%20Seconds%20to%20Make%20Mountain%20Height%20Zero) |
+
+---
+
+## Matrix
+
+| # | Problem | Difficulty | Solution |
+|---|--------|-----------|----------|
+| 1594 | Maximum Non-Negative Product in a Matrix | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/Matrix/1594.%20Maximum%20Non%20Negative%20Product%20in%20a%20Matrix) |
+| 1727 | Largest Submatrix With Rearrangements | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/Matrix/1727.%20Largest%20Submatrix%20With%20Rearrangements) |
+| 3070 | Count Submatrices with Top-Left Element and Sum ≤ k | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/Matrix/3070.%20Count%20Submatrices%20with%20Top-Left%20Element%20and%20Sum%20Less%20Than%20k) |
+| 3567 | Minimum Absolute Difference in Sliding Submatrix | ![Medium](https://img.shields.io/badge/Medium-orange) | [Java](https://github.com/divcodes1121/leetcode-solutions/blob/main/Matrix/3567.%20Minimum%20Absolute%20Difference%20in%20Sliding%20Submatrix) |
 
 ---
 
@@ -109,7 +123,7 @@ leetcode-solutions
 
 ## 🎯 Goals
 
-- Solve problems consistently  
+- Solve problems consistently
 - Improve **problem-solving skills**
 - Master **data structures & algorithms**
 - Prepare for **software engineering interviews**
