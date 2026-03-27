@@ -1,0 +1,84 @@
+🧩 2946. Matrix Similarity After Cyclic Shifts
+📋 Problem Statement
+
+You are given an m x n matrix mat and an integer k.
+
+Operation (performed k times):
+
+Even rows → left cyclic shift
+Odd rows → right cyclic shift
+
+👉 Return true if after all operations, the matrix becomes same as original, else false.
+
+🧠 Humanized Intuition (VERY IMPORTANT 🔥)
+
+Instead of actually performing k shifts step by step, think smart:
+
+💡 Key Observation
+
+After n shifts → row becomes same again (cycle complete)
+
+So instead of doing k operations:
+👉 Just compute effective shift = k % n
+
+🔄 What does shifting mean?
+
+For a row of length n:
+
+Even row (left shift)
+[j] → (j + shift) % n
+Odd row (right shift)
+[j] → (j - shift + n) % n
+🎯 Core Idea
+
+We don’t need to build a new matrix ❌
+We just check:
+
+👉 “If I shift virtually, does each element match original?”
+
+If ANY mismatch → return false
+Else → return true
+
+🧪 Dry Run
+Example:
+mat = [[1,2,3],
+       [4,5,6],
+       [7,8,9]]
+k = 4
+n = 3 → shift = 4 % 3 = 1
+
+Row 0 → left shift → [2,3,1] ❌ not same
+👉 Answer = false
+
+⚡ Optimized Approach
+Compute shift = k % n
+Traverse each cell (i, j)
+Compute where it should come from after shift
+Compare with original
+💻 Code (Java)
+class Solution {
+    public boolean areSimilar(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int shift = k % n;
+        
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int original = mat[i][j];
+                int rotated;
+                
+                if (i % 2 == 0) { // even row → left shift
+                    rotated = mat[i][(j + shift) % n];
+                } else { // odd row → right shift
+                    rotated = mat[i][(j - shift + n) % n];
+                }
+                
+                if (original != rotated) return false;
+            }
+        }
+        return true;
+    }
+}
+⏱ Complexity Analysis
+Type	Complexity
+Time	O(m × n)
+Space	O(1)
