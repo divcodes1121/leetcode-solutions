@@ -1,0 +1,74 @@
+🧩 2839. Check if Strings Can be Made Equal With Operations I
+
+📋 Problem Statement
+You are given two strings s1 and s2, both of length 4, consisting of lowercase English letters.
+Operation (any number of times):
+Choose indices i and j such that j - i = 2, then swap the two characters at those positions.
+👉 Return true if you can make s1 equal to s2, else false.
+
+🧠 Intuition (VERY IMPORTANT 🔥)
+Instead of simulating swaps step by step, think about what the swap actually allows.
+💡 Key Observation
+The swap only works between positions that are 2 apart.
+So a character at index 0 can only ever reach index 2, and back. It can never reach index 1 or 3.
+This means the string splits into two completely independent lanes:
+Even lane → positions 0 and 2
+Odd  lane → positions 1 and 3
+Characters in even lane stay in even lane forever.
+Characters in odd lane stay in odd lane forever.
+They never mix ❌
+🔄 What does this mean?
+For the two strings to become equal, each lane must have the same set of characters — order doesn't matter since you can always swap within a lane.
+Even lane: {s1[0], s1[2]}  must equal  {s2[0], s2[2]}
+Odd  lane: {s1[1], s1[3]}  must equal  {s2[1], s2[3]}
+🎯 Core Idea
+We don't need to simulate any swaps ❌
+We just check:
+👉 "Do both strings have the same pair of characters in each lane?"
+Since each lane has exactly 2 characters, matching means either:
+
+They're already in the same order, OR
+They're swapped — which is allowed by one operation
+
+If both lanes match → return true
+If either lane fails → return false
+
+🧪 Dry Run
+Example 1: s1 = "abcd", s2 = "cdab"
+Even lane → s1: {a, c}   s2: {c, a}
+  → (a==c && c==a)?  → a==a ✅ and c==c ✅  → match ✅
+
+Odd  lane → s1: {b, d}   s2: {d, b}
+  → (b==b && d==d)?  → b==b ✅ and d==d ✅  → match ✅
+
+Both lanes match → return true ✅
+Example 2: s1 = "abcd", s2 = "dacb"
+Even lane → s1: {a, c}   s2: {d, c}
+  → (a==d && c==c)? No
+  → (a==c && c==d)? No
+  → ❌ mismatch
+
+First lane fails → return false ✅
+
+⚡ Optimized Approach
+
+Extract even-lane pair from both strings → (s1[0], s1[2]) vs (s2[0], s2[2])
+Extract odd-lane pair from both strings → (s1[1], s1[3]) vs (s2[1], s2[3])
+For each pair, check if they match in either order
+Return true only if both lanes match
+
+
+💻 Code (Java)
+javaclass Solution {
+    public boolean canBeEqual(String s1, String s2) {
+        return same(s1.charAt(0), s1.charAt(2), s2.charAt(0), s2.charAt(2)) &&
+               same(s1.charAt(1), s1.charAt(3), s2.charAt(1), s2.charAt(3));
+    }
+
+    private boolean same(char a, char b, char c, char d) {
+        return (a == c && b == d) || (a == d && b == c);
+    }
+}
+
+⏱ Complexity Analysis
+TypeComplexityTimeO(1) — fixed length 4, constant comparisonsSpaceO(1) — no extra data structures
