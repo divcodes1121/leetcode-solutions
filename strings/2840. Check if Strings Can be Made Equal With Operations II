@@ -1,0 +1,82 @@
+🧩 2840. Check if Strings Can be Made Equal With Operations II
+
+📋 Problem Statement
+You are given two strings s1 and s2, both of length n, consisting of lowercase English letters.
+Operation (any number of times):
+Choose indices i and j such that i < j and j - i is even, then swap the characters at those positions.
+👉 Return true if you can make s1 equal to s2, else false.
+
+🧠Intuition (VERY IMPORTANT 🔥)
+💡 Key Observation
+The swap only works when j - i is even.
+Even difference means:
+even index ↔ even index  ✅
+odd  index ↔ odd  index  ✅
+even index ↔ odd  index  ❌  (never allowed)
+So just like the Easy version, the string splits into two independent lanes — but now each lane can have many characters, and any two within the same lane can freely swap with each other.
+🔄 What does this mean?
+Since you can swap any two characters within the same parity lane (by chaining operations), you can achieve any permutation you want within the even lane and any permutation within the odd lane.
+Even lane → all characters at indices 0, 2, 4, 6, ...
+Odd  lane → all characters at indices 1, 3, 5, 7, ...
+🎯 Core Idea
+We don't care about order within each lane ❌
+We just check:
+👉 "Do s1 and s2 have the exact same frequency of each character at even indices?"
+👉 "Do s1 and s2 have the exact same frequency of each character at odd indices?"
+If both frequency maps match → return true
+If either mismatches → return false
+
+🧪 Dry Run
+Example 1: s1 = "abcdba", s2 = "cabdab"
+Even indices (0,2,4): s1 → a,c,b   s2 → c,a,a... wait let's index carefully
+
+s1: a(0) b(1) c(2) d(3) b(4) a(5)
+s2: c(0) a(1) b(2) d(3) a(4) b(5)
+
+Even lane s1: indices 0,2,4 → 'a','c','b'  freq: {a:1, b:1, c:1}
+Even lane s2: indices 0,2,4 → 'c','b','a'  freq: {a:1, b:1, c:1}  ✅ match
+
+Odd  lane s1: indices 1,3,5 → 'b','d','a'  freq: {a:1, b:1, d:1}
+Odd  lane s2: indices 1,3,5 → 'a','d','b'  freq: {a:1, b:1, d:1}  ✅ match
+
+Both lanes match → return true ✅
+Example 2: s1 = "abe", s2 = "bea"
+s1: a(0) b(1) e(2)
+s2: b(0) e(1) a(2)
+
+Even lane s1: indices 0,2 → 'a','e'  freq: {a:1, e:1}
+Even lane s2: indices 0,2 → 'b','a'  freq: {a:1, b:1}  ❌ mismatch
+
+→ return false ✅
+
+⚡ Optimized Approach
+
+Build two 2D frequency arrays — one for s1, one for s2
+First dimension = parity (0 = even lane, 1 = odd lane)
+Second dimension = character (0–25 for a–z)
+Count character frequencies per lane for both strings
+Compare — any mismatch → false
+
+
+💻 Code (Java)
+javaclass Solution {
+    public boolean checkStrings(String s1, String s2) {
+        int[][] freq1 = new int[2][26];
+        int[][] freq2 = new int[2][26];
+
+        for (int i = 0; i < s1.length(); i++) {
+            freq1[i % 2][s1.charAt(i) - 'a']++;
+            freq2[i % 2][s2.charAt(i) - 'a']++;
+        }
+
+        for (int c = 0; c < 26; c++) {
+            if (freq1[0][c] != freq2[0][c]) return false;
+            if (freq1[1][c] != freq2[1][c]) return false;
+        }
+
+        return true;
+    }
+}
+
+⏱ Complexity Analysis
+TypeComplexityTimeO(n) — single pass to build frequencies + O(26) to compareSpaceO(1) — frequency arrays are fixed size 2×26 regardless of input
